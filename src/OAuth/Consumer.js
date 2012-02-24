@@ -100,6 +100,8 @@
                 failure = options.failure || function () {};
 
                 // According to the spec
+                /*
+                // not needed for now and break with JSCocoa
                 withFile = (function(){
                     var hasFile = false;
                     for(var name in data) {
@@ -110,6 +112,7 @@
 
                     return hasFile;
                 })();
+                */
 
                 appendQueryString = options.appendQueryString ? options.appendQueryString : false;
 
