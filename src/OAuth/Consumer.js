@@ -163,15 +163,17 @@
                 };
 
                 headerParams = {
-                    'oauth_callback': oauth.callbackUrl,
                     'oauth_consumer_key': oauth.consumerKey,
                     'oauth_token': oauth.accessTokenKey,
                     'oauth_signature_method': oauth.signatureMethod,
                     'oauth_timestamp': getTimestamp(),
                     'oauth_nonce': getNonce(),
-                    'oauth_verifier': oauth.verifier,
-                    'oauth_version': OAUTH_VERSION_1_0
+                    'oauth_version': OAUTH_VERSION_1_0,
+                    'oauth_verifier': oauth.verifier
                 };
+                if (options.includeCallback) {
+                  headerParams['oauth_callback'] = oauth.callbackUrl;
+                }
 
                 signatureMethod = oauth.signatureMethod;
 
@@ -335,26 +337,37 @@
         fetchRequestToken: function (success, failure) {
             var oauth = this;
             oauth.setAccessToken('', '');
-
             var url = oauth.authorizationUrl;
-            this.post(this.requestTokenUrl, null, function (data) {
+            this.request({
+              'method': 'POST', 
+              'url': this.requestTokenUrl, 
+              'includeCallback': true,
+              'success': function (data) {
                 var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
                 oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
                 success(url + '?' + data.text);
-            }, failure);
+              }, 
+              'failure': failure
+            });
         },
 
         fetchAccessToken: function (success, failure) {
             var oauth = this;
-            this.post(this.accessTokenUrl, null, function (data) {
-                var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
-                oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+            this.request({
+              'method': 'POST', 
+              'url': this.accessTokenUrl, 
+              'includeCallback': true,
+              'success': function (data) {
+                  var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
+                  oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
 
-                // clean up a few un-needed things
-                oauth.setVerifier('');
+                  // clean up a few un-needed things
+                  oauth.setVerifier('');
 
-                success(data);
-            }, failure);
+                  success(data);
+              }, 
+              'failure': failure
+            });
         }
     };
 
