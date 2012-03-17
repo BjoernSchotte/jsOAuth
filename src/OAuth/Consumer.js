@@ -337,7 +337,7 @@
             oauth.setAccessToken('', '');
 
             var url = oauth.authorizationUrl;
-            this.get(this.requestTokenUrl, function (data) {
+            this.post(this.requestTokenUrl, null, function (data) {
                 var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
                 oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
                 success(url + '?' + data.text);
@@ -346,7 +346,7 @@
 
         fetchAccessToken: function (success, failure) {
             var oauth = this;
-            this.get(this.accessTokenUrl, function (data) {
+            this.post(this.accessTokenUrl, null, function (data) {
                 var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
                 oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
 
